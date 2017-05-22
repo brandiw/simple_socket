@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>My Chatroom</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center">Socket IO Chatroom Example</h1>
+      <form id="chat-form">
+        <div class="form-group">
+          <label for="comment">Comment:</label>
+          <input type="text" class="form-control" name="chat" id="comment" placeholder="Tell me something">
+        </div>
+        <input type="submit" value="Say it" class="btn btn-success">
+      </form>
+      <hr>
+      <div id="messages" class="well well-success"></div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+
+      //Client (me) wants to send message to the server. i.e., I just submitted a message
+      $('#chat-form').on('submit', function(e){
+        //prevent the form from actually ever submitting
+        e.preventDefault();
+
+        //Grab the message I wrote in the textbox, and actually send it to the server
+        var message = $('#comment').val();
+        console.log('message:', message);
+        socket.emit('chat message', message);
+
+        //Clear the form after successful submit
+        $('#comment').val('');
+      });
+
+      //Listen for the server to send me a new message. i.e., someone else has a message for me
+      socket.on('chat message', function(msg){
+        console.log('message received');
+        var p = $('<p>').append(msg);
+        $('#messages').append(p);
+      });
+    </script>
+  </body>
+</html>
